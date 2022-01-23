@@ -2,41 +2,70 @@
     <head>
         <script src="map.js" charset="UTF-8"></script>
         <script>
-            objs = {};
-            function draw_map() {
+            var $ = (x) => document.getElementById(x);
+
+            function abbreviate(word) {
+                return word.toLowerCase();
+            }
+
+            var nameToAreas = {};
+            var areaToName = {};
+            var abbrToName = {};
+            function loadMap() {
                 for (var name in areas) {
-                    objs[name] = [];
-                    for (var area of areas[name]) {
-                        obj = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-                        obj.setAttribute("points", area);
-                        obj.setAttribute("fill", "grey");
-                        obj.setAttribute("stroke", "black");
-                        document.getElementById("map").appendChild(obj);
-                        objs[name].push(obj);
+                    abbrToName[abbreviate(name)] = name;
+                    nameToAreas[name] = [];
+                    for (var points of areas[name]) {
+                        area = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                        area.setAttribute("points", points);
+                        area.setAttribute("stroke", "black");
+                        area.addEventListener("click", (x => () => { alert("You clicked on " + x + "."); })(name));
+                        $("map").appendChild(area);
+                        nameToAreas[name].push(area);
                     }
                 }
+                reset();
             }
 
-            function highlight(name) {
-                for (var obj of objs[name]) {
-                    obj.setAttribute("fill", "green");
+            var guessed;
+            function reset() {
+                guessed = [];
+                $("score").textContent = 0;
+                $("total").textContent = Object.keys(nameToAreas).length;
+                for (var name in nameToAreas) {
+                    colorByName(name, "grey");
                 }
             }
 
-            function make_guess() {
-                var input = document.getElementById("guess");
+            function colorByName(name, color) {
+                for (var area of nameToAreas[name]) {
+                    area.setAttribute("fill", color);
+                }
+            }
+
+            function makeGuess() {
+                var input = $("guess");
                 var name = input.value;
-                if (name in objs) {
-                    highlight(name);
+                if (!guessed.includes(name) && name in nameToAreas) {
+                    guessed.push(name);
+                    colorByName(name, "green");
                     input.value = "";
+                    $("score").textContent = guessed.length;
                 }
             }
         </script>
     </head>
-    <body onload="draw_map();">
+    <body onload="loadMap();">
         <svg id="map" height="500px" viewBox="0 0 775 925" xmlns="http://www.w3.org/2000/svg"></svg>
         <p>
-            <input type="text" id="guess" oninput="make_guess();">
+            <input type="text" id="guess" oninput="makeGuess();">
+            <input type="button" value="Reset" onclick="reset();">
+        </p>
+        <p>
+            You guessed <span id="score"></span> out of <span id="total"></span> municipalities.
+        </p>
+        <p>
+            If you are stuck, you can click on any municipality to learn its name.
         </p>
     </body>
 </html>
