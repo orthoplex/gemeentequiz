@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <script src="map.js"></script>
+        <script>
+            objs = {};
+            function draw_map() {
+                for (var name in areas) {
+                    objs[name] = [];
+                    for (var area of areas[name]) {
+                        obj = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                        obj.setAttribute("points", area);
+                        obj.setAttribute("fill", "grey");
+                        obj.setAttribute("stroke", "black");
+                        document.getElementById("map").appendChild(obj);
+                        objs[name].push(obj);
+                    }
+                }
+            }
+
+            function highlight(name) {
+                for (var obj of objs[name]) {
+                    obj.setAttribute("fill", "green");
+                }
+            }
+
+            function make_guess() {
+                var input = document.getElementById("guess");
+                var name = input.value;
+                if (name in objs) {
+                    highlight(name);
+                    input.value = "";
+                }
+            }
+        </script>
+    </head>
+    <body onload="draw_map();">
+        <svg id="map" height="500px" viewBox="0 0 775 925" xmlns="http://www.w3.org/2000/svg"></svg>
+        <p>
+            <input type="text" id="guess" oninput="make_guess();">
+        </p>
+    </body>
+</html>
