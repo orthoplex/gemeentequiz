@@ -45,8 +45,9 @@
 
             function makeGuess() {
                 var input = $("guess");
-                var name = input.value;
-                if (!guessed.includes(name) && name in nameToAreas) {
+                var abbr = abbreviate(input.value);
+                if (!guessed.includes(abbr) && abbr in abbrToName) {
+                    var name = abbrToName[abbr];
                     guessed.push(name);
                     colorByName(name, "green");
                     input.value = "";
