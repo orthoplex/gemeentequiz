@@ -48,7 +48,7 @@
                 var abbr = abbreviate(input.value);
                 if (!guessed.includes(abbr) && abbr in abbrToName) {
                     var name = abbrToName[abbr];
-                    guessed.push(name);
+                    guessed.push(abbr);
                     colorByName(name, "green");
                     input.value = "";
                     $("score").textContent = guessed.length;
